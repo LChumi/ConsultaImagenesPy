@@ -1,0 +1,21 @@
+configurar .gitignore
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Archivos de caché de Python
+__pycache__/
+*.py[cod]
+
+# Archivos de configuración
+.env
+*.env
+
+# Archivos temporales
+*.log
+*.tmp
+
+# Directorios de IDE
+.idea/
+.vscode/
