@@ -1,18 +1,23 @@
-FROM python:3.11-slim
+# Usa una imagen oficial de Python
+FROM python:3.12-slim
 
-# Variables de entorno
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Instala Java (requerido por jaydebeapi para usar el jar)
+RUN apt-get update && apt-get install -y default-jre && rm -rf /var/lib/apt/lists/*
 
-# Establecer directorio de trabajo
+# Establece el directorio de trabajo
 WORKDIR /app
 
-# Instalar dependencias
+# Copia dependencias
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copiar el código
+# Instala dependencias de Python
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia tu aplicación y el jar
 COPY . .
 
-# Comando para levantar FastAPI con hot reload (solo desarrollo)
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Expón el puerto de FastAPI
+EXPOSE 8000
+
+# Comando para ejecutar FastAPI con recarga deshabilitada (modo prod)
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
