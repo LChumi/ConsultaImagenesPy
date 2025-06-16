@@ -1,15 +1,25 @@
-from app.database import db
+from typing import List, Optional
 from app.models.producto import Producto
 
-async def get_all_productos():
-    productos = []
-    for doc in db.producto.find():
-        producto = Producto(**doc)
-        productos.append(producto)
-    return productos
+def get_productos(db: Session) -> List[Producto]:
+    return db.query(Producto).all()
 
-async def get_producto_by_id(pro_codigo: int, pro_empresa: int):
-    doc = db.producto.find_one({"PRO_CODIGO": pro_codigo, "PRO_EMPRESA": pro_empresa})
-    if doc:
-        return Producto(**doc)
-    return None
+def get_producto(db: Session, pro_empresa: int, pro_codigo: int) -> Optional[Producto]:
+    return db.query(Producto).filter(
+        Producto.PRO_EMPRESA == pro_empresa,
+        Producto.PRO_CODIGO == pro_codigo
+    ).first()
+
+def crear_producto(db: Session, producto: Producto) -> Producto:
+    db.add(producto)
+    db.commit()
+    db.refresh(producto)
+    return producto
+
+def eliminar_producto(db: Session, pro_empresa: int, pro_codigo: int) -> bool:
+    producto = get_producto(db, pro_empresa, pro_codigo)
+    if producto:
+        db.delete(producto)
+        db.commit()
+        return True
+    return False

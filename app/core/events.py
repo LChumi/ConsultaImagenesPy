@@ -1,15 +1,17 @@
-from app.database import engine
-from sqlalchemy.ext.asyncio import AsyncEngine
+from app.core.database import get_connection
 
-#Si se usa SQLAlchemy async, cierra el engine async 
-async def shutdown():
-    if isinstance(engine, AsyncEngine):
-        await engine.dispose()
-    else:
-        # sync engine 
-        engine.dispose()
-        
-# Si quieres acciones al arrancar:
 async def startup():
-    # Ejemplo: ping a la base de datos
-    print("App starting up...")
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1 FROM dual")
+        result = cursor.fetchone()
+        print("Conexión a la base de datos exitosa:", result)
+        cursor.close()
+        conn.close()
+    except Exception as e:
+        print("Conexión a la base de datos fallida:", e)
+
+async def shutdown():
+    print("App apagándose...")
+    # No hace falta cerrar nada global porque no tienes `db` singleton

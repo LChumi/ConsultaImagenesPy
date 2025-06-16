@@ -1,17 +1,21 @@
-from fastapi import APIRouter
-from app.models.producto import Producto
-from app.controllers.producto_controller import (get_all_productos,
-                                                  get_producto_by_id)
+from fastapi import APIRouter, HTTPException
+from typing import List
+from app.schemas.producto_schema import ProductoResponse
+from app.services.producto_service import get_producto, get_productos_by_pro_id
 
+router = APIRouter(prefix="/productos", tags=["productos"])
 
-router = APIRouter(prefix="/producto", tags=["producto"])
+# ✅ Primero la específica
+@router.get("/by_pro_id/{pro_id}", response_model=List[ProductoResponse])
+def listar_productos_por_pro_id(pro_id: str):
+    productos = get_productos_by_pro_id(pro_id)
+    return [p.__dict__ for p in productos]
 
-@router.get("/id/{pro_codigo}/{pro_empresa}", response_model=Producto)
-async def get_producto(pro_codigo: int, pro_empresa: int):
-    """
-    Get a product by its code and company ID.
-    """
-    producto = await get_producto_by_id(pro_codigo, pro_empresa)
+# ✅ Luego la genérica
+@router.get("/{pro_empresa}/{pro_codigo}", response_model=ProductoResponse)
+def obtener_producto(pro_empresa: int, pro_codigo: int):
+    producto = get_producto(pro_empresa, pro_codigo)
     if not producto:
-        return {"error": "Producto not found"}
-    return producto
+        raise HTTPException(status_code=404, detail="Producto no encontrado")
+    return producto.__dict__
+

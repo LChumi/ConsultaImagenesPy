@@ -1,17 +1,14 @@
 from fastapi import FastAPI
 from app.routers import producto
-from app.core import events
+from app.core import events, config
 
 app = FastAPI(
-    title="API Consulta Productos por Imagenes",
-    version="1.0.0",
+    title=config.settings.PROJECT_NAME,
+    version=config.settings.API_VERSION,
 )
 
-#Routers
 app.include_router(producto.router)
 
-
-#Eventos de arranque 
 @app.on_event("startup")
 async def startup():
     await events.startup()
@@ -22,4 +19,4 @@ async def shutdown():
 
 @app.get("/")
 async def root():
-    return {"message": "API Consulta Productos por Imagenes inicializado"}
+    return {"message": "✅ API Lista"}
