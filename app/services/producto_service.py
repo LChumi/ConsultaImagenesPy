@@ -1,5 +1,9 @@
+import os
+from app.services.image_processor import ImageProcessor
 from app.core.database import get_connection
 from app.models.producto import Producto
+
+IMAGES_DIR = "IMAGES"
 
 def get_producto(pro_empresa: int, pro_codigo: int):
     conn = get_connection()
