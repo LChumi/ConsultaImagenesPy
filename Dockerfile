@@ -1,5 +1,5 @@
 # Usa una imagen oficial de Python
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 # Instala Java (requerido por jaydebeapi para usar el jar)
 RUN apt-get update && apt-get install -y default-jre && rm -rf /var/lib/apt/lists/*
