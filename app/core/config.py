@@ -1,14 +1,17 @@
 from pydantic_settings import BaseSettings
-from pydantic import Field
 
 class Settings(BaseSettings):
     # Oracle
-    ORACLE_USER: str = Field(default="data_usr")
-    ORACLE_PASSWORD: str = Field(default="dataicep1")
-    ORACLE_HOST: str = Field(default="192.168.112.46")
-    ORACLE_PORT: int = Field(default=1521)
-    ORACLE_SERVICE_NAME: str = Field(default="db01")
+    ORACLE_USER: str
+    ORACLE_PASSWORD: str
+    ORACLE_HOST: str
+    ORACLE_PORT: int
+    ORACLE_SERVICE_NAME: str
 
+    # Directorio de imágenes
+    IMAGES_DIR: str
+
+    # Propiedad para construir el DSN o URI
     @property
     def ORACLE_URI(self) -> str:
         return (
@@ -16,11 +19,12 @@ class Settings(BaseSettings):
             f"@{self.ORACLE_HOST}:{self.ORACLE_PORT}/?service_name={self.ORACLE_SERVICE_NAME}"
         )
 
-    # Otros settings escalables:
+    # Otros settings opcionales
     API_VERSION: str = "1.0.0"
     PROJECT_NAME: str = "API Consulta Productos por Imágenes"
 
     class Config:
         env_file = ".env"
+
 
 settings = Settings()
